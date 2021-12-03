@@ -9,7 +9,7 @@
 import csv, sys
 from ortools.linear_solver import pywraplp
 
-salaryCap = 60000
+salaryCap = 100000
 
 def getPositionNumber(name):
     return {
