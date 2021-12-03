@@ -1,6 +1,7 @@
 # NBA Optimizer
 #
-# by Dave Hensley
+# Original by Dave Hensley
+# Converted to Py3 and optimised for Draftstars by Harry Tucker
 #
 # Picks an ideal fantasy NBA team using a modified knapsack algorithm
 #
@@ -23,11 +24,11 @@ def getPositionNumber(name):
 def main(players, salaryCap):
     solver = pywraplp.Solver('CoinsGridCLP', pywraplp.Solver.CBC_MIXED_INTEGER_PROGRAMMING)
 
-    rangeC = range(len(players[0]))
-    rangePG = range(len(players[1]))
-    rangePF = range(len(players[2]))
-    rangeSG = range(len(players[3]))
-    rangeSF = range(len(players[4]))
+    rangeC = list(range(len(players[0])))
+    rangePG = list(range(len(players[1])))
+    rangePF = list(range(len(players[2])))
+    rangeSG = list(range(len(players[3])))
+    rangeSF = list(range(len(players[4])))
 
     takeC = [solver.IntVar(0, 1, 'takeC[%i]' % j) for j in rangeC]
     takePG = [solver.IntVar(0, 1, 'takePG[%i]' % j) for j in rangePG]
@@ -75,43 +76,43 @@ def main(players, salaryCap):
     solver.Maximize(valueC + valuePG + valuePF + valueSG + valueSF)
     solver.Solve()
     assert solver.VerifySolution(1e-7, True)
-    print 'Solved in', solver.wall_time(), 'milliseconds!', "\n"
+    print('Solved in', solver.wall_time(), 'milliseconds!', "\n")
     salary = 0
 
     for i in rangeC:
         if (takeC[i].SolutionValue()):
             salary += players[0][i][2]
-            print players[0][i][0], '(C): ${:,d}'.format(players[0][i][2]), '(' + str(players[0][i][1]) + ')'
+            print(players[0][i][0], '(C): ${:,d}'.format(players[0][i][2]), '(' + str(players[0][i][1]) + ')')
 
     for i in rangePG:
         if (takePG[i].SolutionValue()):
             salary += players[1][i][2]
-            print players[1][i][0], '(PG): ${:,d}'.format(players[1][i][2]), '(' + str(players[1][i][1]) + ')'
+            print(players[1][i][0], '(PG): ${:,d}'.format(players[1][i][2]), '(' + str(players[1][i][1]) + ')')
 
     for i in rangePF:
         if (takePF[i].SolutionValue()):
             salary += players[2][i][2]
-            print players[2][i][0], '(PF): ${:,d}'.format(players[2][i][2]), '(' + str(players[2][i][1]) + ')'
+            print(players[2][i][0], '(PF): ${:,d}'.format(players[2][i][2]), '(' + str(players[2][i][1]) + ')')
 
     for i in rangeSG:
         if (takeSG[i].SolutionValue()):
             salary += players[3][i][2]
-            print players[3][i][0], '(SG): ${:,d}'.format(players[3][i][2]), '(' + str(players[3][i][1]) + ')'
+            print(players[3][i][0], '(SG): ${:,d}'.format(players[3][i][2]), '(' + str(players[3][i][1]) + ')')
 
     for i in rangeSF:
         if (takeSF[i].SolutionValue()):
             salary += players[4][i][2]
-            print players[4][i][0], '(SF): ${:,d}'.format(players[4][i][2]), '(' + str(players[4][i][1]) + ')'
+            print(players[4][i][0], '(SF): ${:,d}'.format(players[4][i][2]), '(' + str(players[4][i][1]) + ')')
 
-    print "\n", 'Total: ${:,d}'.format(salary), '(' + str(solver.Objective().Value()) + ')'
+    print("\n", 'Total: ${:,d}'.format(salary), '(' + str(solver.Objective().Value()) + ')')
 
 if (len(sys.argv) < 2):
-    print 'Usage:', sys.executable, sys.argv[0], 'players.csv'
+    print('Usage:', sys.executable, sys.argv[0], 'players.csv')
     sys.exit(1)
 
 players = [[], [], [], [], []]
 
-with open(sys.argv[1], 'rb') as csvfile:
+with open(sys.argv[1], 'rt', encoding="ascii") as csvfile:
     reader = csv.DictReader(csvfile)
 
     for row in reader:
